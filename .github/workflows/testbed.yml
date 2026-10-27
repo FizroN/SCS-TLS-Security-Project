@@ -1,0 +1,29 @@
+name: Test TLS lab
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+      - name: Validate Compose file
+        run: docker compose config --quiet
+      - name: Build certificate and OpenSSL tool image
+        run: docker compose build certgen tls-client
+      - name: Generate disposable lab certificates
+        run: docker compose run --rm certgen
+      - name: Launch HTTPS servers
+        run: docker compose up -d baseline hardened
+      - name: Run smoke tests
+        run: sh scripts/ci-smoke.sh
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Clean up
+        if: always()
+        run: docker compose down --remove-orphans

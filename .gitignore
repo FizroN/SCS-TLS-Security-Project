@@ -1,0 +1,14 @@
+# Locally generated private keys/certificates: NEVER commit
+certs/*
+!certs/.gitkeep
+
+# Runtime output and scans
+results/*
+!results/.gitkeep
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
